@@ -1,0 +1,17 @@
+[package]
+name = "ama-cymru"
+version = "0.1.0"
+authors = ["Ossi Herrala <devnull@hownetworks.io>"]
+
+description = "AMA - Cymru Backend"
+homepage = "https://github.com/HowNetWorks/ama-cymru#readme"
+repository = "https://github.com/HowNetWorks/ama-cymru"
+readme = "README.md"
+
+license = "MIT"
+
+[dependencies]
+iron = "0.4.0"
+router = "0.4.0"
+rustc-serialize = "0.3.19"
+cymrust = { git = "https://github.com/HowNetWorks/cymrust" }
