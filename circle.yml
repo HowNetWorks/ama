@@ -2,16 +2,16 @@ machine:
   environment:
     PATH: "$PATH:$HOME/.cargo/bin/"
     RUST_BACKTRACE: 1
+  post:
+    - cat $HOME/.gitconfig && mv $HOME/.gitconfig{,.orig}
+    - curl -sSf https://sh.rustup.rs | sh -s -- -y
+    - rustup install beta
+    - rustup install nightly
 
 dependencies:
   cache_directories:
     - "~/.cargo/"
     - "~/.multirust/"
-  pre:
-    - cat $HOME/.gitconfig && mv $HOME/.gitconfig{,.orig}
-    - curl -sSf https://sh.rustup.rs | sh -s -- -y
-    - rustup install beta
-    - rustup install nightly
   override:
     - rustup update
 
@@ -20,3 +20,10 @@ test:
     - rustup run stable cargo test
     - rustup run beta cargo test
     - rustup run nightly cargo test
+
+deployment:
+  aws:
+    branch: production
+    commands:
+      - pip -q install awsebcli
+      - eb deploy
