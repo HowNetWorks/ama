@@ -1,4 +1,6 @@
 machine:
+  services:
+    - docker
   environment:
     PATH: "$PATH:$HOME/.cargo/bin/"
     RUST_BACKTRACE: 1
