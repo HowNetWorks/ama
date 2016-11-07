@@ -2,7 +2,7 @@
 #
 # Build Docker container and push it to Google Container Registry
 #
-# Environment needs $PROJECT_ID set to GCE's project.
+# Environment needs $GCLOUD_PROJECT set to GCE's project.
 #
 #   ./scripts/deploy.sh [<docker tag>]
 #
@@ -29,7 +29,7 @@ set -u
 
 NAME=$(basename "${PWD}")
 
-REMOTE_TAG="eu.gcr.io/${PROJECT_ID}/${NAME}:${TAG}"
+REMOTE_TAG="eu.gcr.io/${GCLOUD_PROJECT}/${NAME}:${TAG}"
 
 docker build -t "${REMOTE_TAG}" .
 gcloud docker -- push "${REMOTE_TAG}"
