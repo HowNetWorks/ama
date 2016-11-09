@@ -18,10 +18,23 @@ fn main() {
     let listen_on = "0:8080";
     let mut router = Router::new();
 
-    router.get("/:ip", cymru_handler, "cymru_handler");
+    /* Google's health check requires 200 OK response from root */
+    router.get("/", ok_handler, "ok_handler");
+
+    /* Handle IP addresses from root level */
+    router.get("/:ip", cymru_handler, "cymru_handler1");
+
+    /* And under /ama-cymru/. Needed for GKE's Ingress */
+    router.get("/ama-cymru/:ip", cymru_handler, "cymru_handler2");
 
     println!("Listening on {}", listen_on);
     Iron::new(router).http(listen_on).unwrap();
+}
+
+
+fn ok_handler(_: &mut Request) -> IronResult<Response> {
+    let response = Response::with((status::Ok, "ok"));
+    Ok(response)
 }
 
 
