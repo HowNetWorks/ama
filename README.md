@@ -1,1 +1,1 @@
-# ama-cymru
+# ama
