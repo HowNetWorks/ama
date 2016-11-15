@@ -16,11 +16,11 @@ struct JSONError<T> {
 pub fn as_json_result<T: Encodable>(result: T) -> String {
     let json = JSONResult { data: result };
     let pretty = json::as_pretty_json(&json);
-    format!("{}", pretty)
+    format!("{}\n", pretty)
 }
 
 pub fn as_json_error<T: Encodable>(result: T) -> String {
     let json = JSONError { errors: [ result ] };
     let pretty = json::as_pretty_json(&json);
-    format!("{}", pretty)
+    format!("{}\n", pretty)
 }

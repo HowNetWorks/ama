@@ -43,7 +43,7 @@ fn main() {
 
 
 fn ok_handler(_: &mut Request) -> IronResult<Response> {
-    let response = Response::with((status::Ok, "ok"));
+    let response = Response::with((status::Ok, "ok\n"));
     Ok(response)
 }
 
@@ -99,7 +99,7 @@ fn reverse_handler(request: &mut Request) -> IronResult<Response> {
     };
 
     let encoded = as_json_result(ip_info);
-    let response = Response::with((status::Ok, format!("{}\n", encoded)));
+    let response = Response::with((status::Ok, encoded));
 
     Ok(response)
 }
@@ -120,7 +120,7 @@ fn whoami_handler(request: &mut Request) -> IronResult<Response> {
     };
 
     let encoded = as_json_result(ip_info);
-    let response = Response::with((status::Ok, format!("{}\n", encoded)));
+    let response = Response::with((status::Ok, encoded));
 
     Ok(response)
 }
