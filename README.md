@@ -53,8 +53,6 @@ with body containing JSON object with "errors".
 ```console
 $ curl https://$SERVER/ama/cymru/185.38.2
 {
-  "errors": [
-    "invalid IP address syntax"
-  ]
+  "message": "invalid IP address syntax"
 }
 ```

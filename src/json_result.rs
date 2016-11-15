@@ -10,7 +10,7 @@ struct JSONResult<T> {
 
 #[derive(RustcEncodable, Debug)]
 struct JSONError<T> {
-    errors: T,
+    message: T,
 }
 
 pub fn as_json_result<T: Encodable>(result: T) -> String {
@@ -19,8 +19,8 @@ pub fn as_json_result<T: Encodable>(result: T) -> String {
     format!("{}\n", pretty)
 }
 
-pub fn as_json_error<T: Encodable>(result: T) -> String {
-    let json = JSONError { errors: [ result ] };
+pub fn as_json_error<T: Encodable>(error_msg: T) -> String {
+    let json = JSONError { message: error_msg };
     let pretty = json::as_pretty_json(&json);
     format!("{}\n", pretty)
 }
