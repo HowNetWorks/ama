@@ -16,14 +16,12 @@ dependencies:
     - "~/.multirust/"
   override:
     - rustup update
-    - rustup run nightly cargo install clippy
 
 test:
   override:
     - rustup run stable cargo test
     - rustup run beta cargo test
     - rustup run nightly cargo test
-    - rustup run nightly cargo clippy
 
 deployment:
   gcr-release:
