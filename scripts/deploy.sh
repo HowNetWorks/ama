@@ -9,7 +9,7 @@
 # If tag is not given, "latest" is used.
 #
 
-if [ ! -f "${PWD}/scripts/deploy.sh" ] && [ ! -f "${PWD}/Dockerfile" ]; then
+if [ ! -f "scripts/deploy.sh" ] && [ ! -f "Dockerfile" ]; then
     echo "ERROR: Run from project root: ./scripts/deploy.sh"
     exit 1
 fi
@@ -27,8 +27,8 @@ fi
 # No unbound variables allowed after this point
 set -u
 
-NAME=$(basename "${PWD}")
-
+DIRNAME=$(pwd -P)
+NAME=$(basename "${DIRNAME}")
 REMOTE_TAG="eu.gcr.io/${GCLOUD_PROJECT}/${NAME}:${TAG}"
 
 docker build -t "${REMOTE_TAG}" .
