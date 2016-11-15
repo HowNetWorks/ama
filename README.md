@@ -48,7 +48,9 @@ $ curl https://$SERVER/ama/cymru/185.38.2.3
 ## Errors
 
 Errors are reported with non-OK HTTP response (status code 400-499)
-with body containing JSON object with "errors".
+with body containing JSON object with "errors". This tries to mimic
+what [GitHub API v3](https://developer.github.com/v3/#client-errors)
+does.
 
 ```console
 $ curl https://$SERVER/ama/cymru/185.38.2
