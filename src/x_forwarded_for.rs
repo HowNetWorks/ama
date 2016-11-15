@@ -36,7 +36,7 @@ impl FromStr for XForwardedFor {
     fn from_str(str: &str) -> hyper::Result<XForwardedFor> {
         let mut ip_addrs: Vec<IpAddr> = Vec::new();
 
-        for ip_str in str.split(",").map(str::trim) {
+        for ip_str in str.split(',').map(str::trim) {
             match ip_str.parse() {
                 Ok(ip) => ip_addrs.push(ip),
                 Err(_) => return Err(hyper::error::Error::Header),
@@ -46,7 +46,7 @@ impl FromStr for XForwardedFor {
         match ip_addrs.split_first() {
             Some((ip_addr, proxy_ips)) => {
                 Ok(XForwardedFor {
-                    ip_address: ip_addr.clone(),
+                    ip_address: *ip_addr,
                     proxy_ips: proxy_ips.to_vec(),
                 })
             }
