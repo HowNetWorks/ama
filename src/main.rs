@@ -7,9 +7,13 @@ extern crate rustc_serialize;
 extern crate cymrust;
 extern crate resolve;
 
+use iron::headers::ContentType;
+use iron::modifiers::Header;
 use iron::prelude::*;
 use iron::status;
 use router::Router;
+
+use rustc_serialize::Encodable;
 
 use std::net::IpAddr;
 
@@ -18,6 +22,7 @@ use resolve::resolver::resolve_addr;
 
 use json_result::{as_json_result, as_json_error};
 use x_forwarded_for::XForwardedFor;
+
 
 #[derive(RustcEncodable, Debug)]
 struct IPInfo {
@@ -30,7 +35,7 @@ fn main() {
     let listen_on = "0:8080";
     let mut router = Router::new();
 
-    /* Google's health check requires 200 OK response from root */
+    // Google's health check requires 200 OK response from root
     router.get("/", ok_handler, "ok_handler");
 
     router.get("/ama/cymru/:ip", cymru_handler, "cymru_handler");
@@ -53,27 +58,14 @@ fn cymru_handler(request: &mut Request) -> IronResult<Response> {
     let ip_str = router.find("ip").unwrap();
 
     let ip: IpAddr = match ip_str.parse() {
-        Err(err) => {
-            let json = as_json_error(format!("{}", err));
-            let response = Response::with((status::BadRequest, json));
-            return Ok(response);
-        }
+        Err(err) => return badreq_response(format!("{}", err)),
         Ok(val) => val,
     };
 
-    let ip2asn: Vec<CymruIP2ASN> = match cymru_ip2asn(ip) {
-        Err(err) => {
-            let json = as_json_error(err);
-            let response = Response::with((status::BadRequest, json));
-            return Ok(response);
-        }
-        Ok(val) => val,
-    };
-
-    let encoded = as_json_result(&ip2asn);
-    let response = Response::with((status::Ok, encoded));
-
-    Ok(response)
+    match cymru_ip2asn(ip) {
+        Err(err) => badreq_response(err),
+        Ok(ip2asn) => ok_response(ip2asn),
+    }
 }
 
 
@@ -81,27 +73,10 @@ fn reverse_handler(request: &mut Request) -> IronResult<Response> {
     let router = request.extensions.get::<Router>().unwrap();
     let ip_str = router.find("ip").unwrap();
 
-    let ip: IpAddr = match ip_str.parse() {
-        Err(err) => {
-            let json = as_json_error(format!("{}", err));
-            let response = Response::with((status::BadRequest, json));
-            return Ok(response);
-        }
-        Ok(val) => val,
-    };
-
-    let addr_str = format!("{}", ip);
-    let name_str = resolve_addr(&ip).ok();
-
-    let ip_info = IPInfo {
-        ip: addr_str,
-        name: name_str,
-    };
-
-    let encoded = as_json_result(ip_info);
-    let response = Response::with((status::Ok, encoded));
-
-    Ok(response)
+    match ip_str.parse::<IpAddr>() {
+        Err(err) => badreq_response(format!("{}", err)),
+        Ok(ip) => ok_response(reverse_lookup(ip))
+    }
 }
 
 
@@ -111,16 +86,28 @@ fn whoami_handler(request: &mut Request) -> IronResult<Response> {
         None => request.remote_addr.ip(),
     };
 
+    ok_response(reverse_lookup(ip))
+}
+
+
+fn reverse_lookup(ip: IpAddr) -> IPInfo {
     let addr_str = format!("{}", ip);
     let name_str = resolve_addr(&ip).ok();
 
-    let ip_info = IPInfo {
+    IPInfo {
         ip: addr_str,
         name: name_str,
-    };
+    }
+}
 
-    let encoded = as_json_result(ip_info);
-    let response = Response::with((status::Ok, encoded));
+fn ok_response<T: Encodable>(result: T) -> IronResult<Response> {
+    let encoded = as_json_result(result);
+    let response = Response::with((status::Ok, Header(ContentType::json()), encoded));
+    Ok(response)
+}
 
+fn badreq_response<T: Encodable>(err: T) -> IronResult<Response> {
+    let json = as_json_error(err);
+    let response = Response::with((status::BadRequest, Header(ContentType::json()), json));
     Ok(response)
 }
