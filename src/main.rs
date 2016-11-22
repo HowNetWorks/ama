@@ -38,9 +38,9 @@ fn main() {
     // Google's health check requires 200 OK response from root
     router.get("/", ok_handler, "ok_handler");
 
-    router.get("/ama/cymru/:ip", cymru_handler, "cymru_handler");
-    router.get("/ama/reverse/:ip", reverse_handler, "reverse_handler");
-    router.get("/ama/whoami/", whoami_handler, "whoami_handler");
+    router.get("/api/cymru/:ip", cymru_handler, "cymru_handler");
+    router.get("/api/reverse/:ip", reverse_handler, "reverse_handler");
+    router.get("/api/whoami/", whoami_handler, "whoami_handler");
 
     println!("Listening on {}", listen_on);
     Iron::new(router).http(listen_on).unwrap();
