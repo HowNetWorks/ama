@@ -30,6 +30,17 @@ struct IPInfo {
     name: Option<String>,
 }
 
+#[derive(RustcEncodable, Debug)]
+struct Cymru {
+    pub ip_addr: String,
+    pub bgp_prefix: String,
+    pub as_number: u32,
+    pub as_name: String,
+    pub country_code: String,
+    pub registry: String,
+    pub allocated: Option<String>,
+}
+
 
 fn main() {
     let listen_on = "0:8080";
@@ -62,9 +73,24 @@ fn cymru_handler(request: &mut Request) -> IronResult<Response> {
         Ok(val) => val,
     };
 
+    fn to_encodable(ip2asn: CymruIP2ASN) -> Cymru {
+        Cymru {
+            ip_addr: ip2asn.ip_addr,
+            bgp_prefix: ip2asn.bgp_prefix,
+            as_number: ip2asn.as_number,
+            as_name: ip2asn.as_name,
+            country_code: ip2asn.country_code,
+            registry: ip2asn.registry,
+            allocated: ip2asn.allocated,
+        }
+    }
+
     match cymru_ip2asn(ip) {
         Err(err) => badreq_response(err),
-        Ok(ip2asn) => ok_response(ip2asn),
+        Ok(ip2asn) => {
+            let results: Vec<Cymru> = ip2asn.into_iter().map(to_encodable).collect();
+            ok_response(results)
+        }
     }
 }
 
