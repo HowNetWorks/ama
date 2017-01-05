@@ -1,4 +1,4 @@
-# Ask Me Everything
+# Ask Me Everything [![CircleCI](https://circleci.com/gh/HowNetWorks/ama.svg?style=svg)](https://circleci.com/gh/HowNetWorks/ama)
 
 ## Endpoints
 
