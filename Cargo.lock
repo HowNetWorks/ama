@@ -2,7 +2,7 @@
 name = "ama"
 version = "0.2.0"
 dependencies = [
- "cymrust 0.2.0 (git+https://github.com/HowNetWorks/cymrust)",
+ "cymrust 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "hyper 0.9.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "iron 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "resolve 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -38,8 +38,8 @@ dependencies = [
 
 [[package]]
 name = "cymrust"
-version = "0.2.0"
-source = "git+https://github.com/HowNetWorks/cymrust#712bb1d54fd02db13617ae7d034e8edd870c4094"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "chrono 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "resolve 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -363,7 +363,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum chrono 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)" = "9213f7cd7c27e95c2b57c49f0e69b1ea65b27138da84a170133fd21b07659c00"
 "checksum conduit-mime-types 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "95ca30253581af809925ef68c2641cc140d6183f43e12e0af4992d53768bd7b8"
 "checksum cookie 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "0e3d6405328b6edb412158b3b7710e2634e23f3614b9bb1c412df7952489a626"
-"checksum cymrust 0.2.0 (git+https://github.com/HowNetWorks/cymrust)" = "<none>"
+"checksum cymrust 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4bdc97878dc5001923f506df79a438fa9f888a9cc2893a42a1a48ac8cd872e19"
 "checksum error 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "a6e606f14042bb87cc02ef6a14db6c90ab92ed6f62d87e69377bc759fd7987cc"
 "checksum hpack 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3d2da7d3a34cf6406d9d700111b8eafafe9a251de41ae71d8052748259343b58"
 "checksum httparse 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "a6e7a63e511f9edffbab707141fbb8707d1a3098615fb2adbd5769cdfcc9b17d"

@@ -83,7 +83,7 @@ fn cymru_handler(request: &mut Request) -> IronResult<Response> {
 
     fn to_encodable(ip2asn: CymruIP2ASN) -> Cymru {
         Cymru {
-            ip_addr: ip2asn.ip_addr,
+            ip_addr: ip2asn.ip_addr.to_string(),
             bgp_prefix: ip2asn.bgp_prefix,
             as_number: ip2asn.as_number,
             as_name: ip2asn.as_name,
