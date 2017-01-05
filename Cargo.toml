@@ -1,6 +1,6 @@
 [package]
 name = "ama"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Ossi Herrala <devnull@hownetworks.io>"]
 
 description = "Ask Me Anything - Knowledge about life, universe and everything"
@@ -14,7 +14,7 @@ license = "MIT"
 iron = "0.4.0"
 resolve = "0.1.2"
 router = "0.4.0"
-rustc-serialize = "0.3.19"
+rustc-serialize = "0.3.22"
 cymrust = { git = "https://github.com/HowNetWorks/cymrust" }
 
 [dependencies.hyper]
