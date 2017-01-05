@@ -7,15 +7,18 @@ extern crate rustc_serialize;
 extern crate cymrust;
 extern crate resolve;
 
-use iron::headers::ContentType;
+use iron::headers::{Headers, ContentType, CacheControl, CacheDirective};
 use iron::modifiers::Header;
+
 use iron::prelude::*;
 use iron::status;
 use router::Router;
 
 use rustc_serialize::Encodable;
 
+use std::time::{Duration, SystemTime};
 use std::net::IpAddr;
+use std::cmp::min;
 
 use cymrust::*;
 use resolve::resolver::resolve_addr;
@@ -24,13 +27,13 @@ use json_result::{as_json_result, as_json_error};
 use x_forwarded_for::XForwardedFor;
 
 
-#[derive(RustcEncodable, Debug)]
+#[derive(Debug, PartialEq, PartialOrd, Eq, Ord, RustcEncodable)]
 struct IPInfo {
     ip: String,
     name: Option<String>,
 }
 
-#[derive(RustcEncodable, Debug)]
+#[derive(Debug, PartialEq, PartialOrd, Eq, Ord, RustcEncodable)]
 struct Cymru {
     pub ip_addr: String,
     pub bgp_prefix: String,
@@ -39,6 +42,11 @@ struct Cymru {
     pub country_code: String,
     pub registry: String,
     pub allocated: Option<String>,
+}
+
+enum Cache {
+    Public(Duration),
+    NoCache
 }
 
 
@@ -88,8 +96,24 @@ fn cymru_handler(request: &mut Request) -> IronResult<Response> {
     match cymru_ip2asn(ip) {
         Err(err) => badreq_response(err),
         Ok(ip2asn) => {
-            let results: Vec<Cymru> = ip2asn.into_iter().map(to_encodable).collect();
-            ok_response(results)
+            let mut results: Vec<Cymru> = Vec::with_capacity(ip2asn.len());
+
+            let now = SystemTime::now();
+            let mut max_age = Duration::from_secs(365*24*60*60);
+
+            for item in ip2asn {
+                let expires = item.expires;
+                let encodable = to_encodable(item);
+                results.push(encodable);
+
+                match expires.duration_since(now) {
+                    Err(_) => continue,
+                    Ok(duration) => if duration < max_age {
+                        max_age = duration;
+                    }
+                }
+            }
+            ok_response(results, Cache::Public(max_age))
         }
     }
 }
@@ -98,10 +122,11 @@ fn cymru_handler(request: &mut Request) -> IronResult<Response> {
 fn reverse_handler(request: &mut Request) -> IronResult<Response> {
     let router = request.extensions.get::<Router>().unwrap();
     let ip_str = router.find("ip").unwrap();
+    let max_age = Duration::from_secs(30); // FIXME: This should come from DNS TTL
 
     match ip_str.parse::<IpAddr>() {
         Err(err) => badreq_response(format!("{}", err)),
-        Ok(ip) => ok_response(reverse_lookup(ip))
+        Ok(ip) => ok_response(reverse_lookup(ip), Cache::Public(max_age))
     }
 }
 
@@ -112,7 +137,7 @@ fn whoami_handler(request: &mut Request) -> IronResult<Response> {
         None => request.remote_addr.ip(),
     };
 
-    ok_response(reverse_lookup(ip))
+    ok_response(reverse_lookup(ip), Cache::NoCache)
 }
 
 
@@ -126,9 +151,26 @@ fn reverse_lookup(ip: IpAddr) -> IPInfo {
     }
 }
 
-fn ok_response<T: Encodable>(result: T) -> IronResult<Response> {
+fn ok_response<T: Encodable>(result: T, cache: Cache) -> IronResult<Response> {
     let encoded = as_json_result(result);
-    let response = Response::with((status::Ok, Header(ContentType::json()), encoded));
+    let mut headers = Headers::new();
+    let mut response = Response::with((status::Ok, encoded));
+
+    let max = 365*24*60*60; // year in seconds
+    let cache_control = match cache {
+        Cache::Public(max_age) => {
+            let seconds = min(max_age.as_secs(), max) as u32;
+            vec![CacheDirective::MaxAge(seconds), CacheDirective::Public]
+        },
+        Cache::NoCache => {
+            vec![CacheDirective::NoCache, CacheDirective::NoStore, CacheDirective::MustRevalidate]
+        }
+    };
+
+    headers.set(ContentType::json());
+    headers.set(CacheControl(cache_control));
+    response.headers = headers;
+
     Ok(response)
 }
 
