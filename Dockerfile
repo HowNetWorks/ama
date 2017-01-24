@@ -1,4 +1,4 @@
-FROM eu.gcr.io/hownetworks-148514/rust-base:v1.13.0
+FROM eu.gcr.io/hownetworks-148514/rust-base:v1.14.0
 
 RUN mkdir -p /app /build && useradd app
 
