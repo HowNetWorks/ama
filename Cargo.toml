@@ -1,7 +1,7 @@
 [package]
 name = "ama"
-version = "0.2.0"
-authors = ["Ossi Herrala <devnull@hownetworks.io>"]
+version = "0.2.1"
+authors = ["Ossi Herrala <devel@hownetworks.io>"]
 publish = false
 
 description = "Ask Me Anything - Knowledge about life, universe and everything"
@@ -12,7 +12,7 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-cymrust = "0.3.0"
+cymrust = "0.3.2"
 iron = "0.4.0"
 resolve = "0.1.2"
 router = "0.4.0"
