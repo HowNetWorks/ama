@@ -1,18 +1,11 @@
-FROM eu.gcr.io/hownetworks-148514/rust-base:v1.14.0
+FROM debian:jessie-slim
 
-RUN mkdir -p /app /build && useradd app
-
-WORKDIR /build/
-COPY Cargo.* /build/
-COPY src /build/src/
-
-RUN cargo build --release && \
-    cp target/release/ama /app && \
-    cd / && \
-    rm -rf /build /root/.cargo
+RUN useradd -m app
+COPY target/release/ama /home/app/ama
+RUN chown -R app:app /home/app/ama
 
 USER app
-WORKDIR /
+WORKDIR /home/app
 
 EXPOSE 8080
-ENTRYPOINT ["/app/ama"]
+CMD ./ama
