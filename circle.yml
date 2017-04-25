@@ -16,6 +16,8 @@ dependencies:
     - "~/.multirust/"
   override:
     - rustup update
+    - rustup run stable cargo fetch
+    - rustup run beta cargo fetch
 
 test:
   override:
