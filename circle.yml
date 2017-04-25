@@ -5,7 +5,6 @@ machine:
     PATH: "$PATH:$HOME/.cargo/bin/"
     RUST_BACKTRACE: 1
   post:
-    - cat $HOME/.gitconfig && mv $HOME/.gitconfig{,.orig}
     - curl -sSf https://sh.rustup.rs | sh -s -- -y
     - rustup install beta
 
