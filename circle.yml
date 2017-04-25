@@ -8,7 +8,6 @@ machine:
     - cat $HOME/.gitconfig && mv $HOME/.gitconfig{,.orig}
     - curl -sSf https://sh.rustup.rs | sh -s -- -y
     - rustup install beta
-    - rustup install nightly
 
 dependencies:
   cache_directories:
@@ -22,14 +21,12 @@ test:
   override:
     - rustup run stable cargo test
     - rustup run beta cargo test
-    - rustup run nightly cargo test
+    - rustup run stable cargo build --release
 
 deployment:
-  gcr-release:
+  docker-release:
     tag: /^v[0-9]+\.[0-9]+\.[0-9]+$/
     commands:
-      - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
-      - gcloud config set project ${GCLOUD_PROJECT}
-      - echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ${HOME}/gcloud-service-key.json
-      - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
-      - ./scripts/deploy.sh ${CIRCLE_TAG}
+      - docker build --rm=false -t ${DOCKER_HUB_IMAGE}:${CIRCLE_TAG} .
+      - docker login -e ${DOCKER_HUB_EMAIL} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASS}
+      - docker push ${DOCKER_HUB_IMAGE}:${CIRCLE_TAG}
