@@ -12,8 +12,8 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-cymrust = "0.3.2"
-hyper = "0.10.5"
+cymrust = "0.3.3"
+hyper = "0.10.13"
 iron = "0.5.1"
 resolve = "0.1.2"
 router = "0.5.1"
